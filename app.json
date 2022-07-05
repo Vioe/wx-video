@@ -1,0 +1,15 @@
+{
+  "pages": [
+    "pages/detail/detail",
+    "pages/video-list/video-list",
+    "pages/index/index",
+    "pages/table-page/table-page"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "视频滑动切换",
+    "navigationBarTextStyle": "black"
+  },
+  "sitemapLocation": "sitemap.json"
+}

@@ -1,0 +1,18 @@
+<view class='page dark wrap'>
+<swiper id="videoSwiper" class="swiper-container" vertical="{{true}}" 
+easing-function='easeOutCubic' bindtouchstart='bindtouchstart' bindtouchend='bindtouchend' bindchange='swiperchange' bindanimationfinish='swiperanimateend' duration="600" current="{{currIndex}}">
+  <swiper-item class="swiper-item-cont" wx:key="index" wx:for="{{videoList}}" wx:for-item="item" wx:for-index="index">
+    <!-- <video-button-bar bind:buttonhandle="buttonhandle"></video-button-bar> -->
+    <video class='video-player' 
+              controls='{{true}}'
+              autoplay='{{true}}'
+              poster='{{item.videoimg}}'
+              src="{{item.videourl}}"
+              show-fullscreen-btn="{{false}}"
+              show-center-play-btn="{{true}}"
+              play-btn-position='center'
+              enable-play-gesture="{{true}}"
+              show-play-btn="{{false}}" object-fit="contain"></video>
+  </swiper-item>
+</swiper>
+</view>
