@@ -1,96 +1,45 @@
-// miniprogram/pages/multi/detail/detail.js
-// const plugin = requirePlugin("myPlugin");
-
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-
-    ww: 0, //window width
-    wh: 0, //window height
-    currVideoHeight: '100%',
-    currVideoWidth: '100%',
-    currVideoTop: 0,
     currIndex: 0,
     coverImage: null,
-    list: [
-      {
+    list: [{
         "typeid": 1,
-        "videoimg": "../../images/p002.png",
+        "videoimg": "https://educate-res.babybus.com/Educate/ResourceFile/20220706/33a08dc719514223b8a24c53190f18b0.png",
         "videoname": "测试视频1",
         "videourl": "https://media.w3.org/2010/05/sintel/trailer.mp4"
       },
       {
         "typeid": 2,
-        "videoimg": "../../images/p002.png",
+        "videoimg": "https://educate-res.babybus.com/Educate/ResourceFile/20220706/036ebb6288264cdd960b716616455f2f.png",
         "videoname": "测试视频2",
-        "videourl": "https://media.w3.org/2010/05/sintel/trailer.mp4"
+        "videourl": "https://educate-res.babybus.com/Educate/ResourceFile/20220706/b2a7612d8631478595b50cd1bb031ace.mp4"
       },
-     ],
-    ts: 0,//timeStart
-    te: 0,//timeEnd
+    ],
     hiddenCover: false,
-    videoReady: false,
-    playerid: 'detail-video',
     playing: false,
     showPlayBtn: false,
-    playBtnTop: 0,
-    playBtnLeft: 0,
     currTimeStr: '00:00',
     endTimeStr: '00:00',
     canUpdateSlider: true,
     duration: 0,
     sliderValue: 0,
-    showOperation: true,
+    showOperation: true, //显示点赞收藏
     operationData: null,
-    showComment: false,
-    currCommentList: [],
-    userInput: '',
-    commentScrollTop: 0,
-    showGoodsList: false,
-    currGoodsList: []
-
   },
-
+  touchTimeStart: 0, //timeStart
+  touchTimeEnd: 0, //timeEnd
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function(options) {
-    return;
-
-    const index = parseInt(options.index);
-    const app = getApp();
-
-    const vdata = app.globalData.currVideoList[index];
-    const cml = vdata.commentList;
-    const ww = options.ww;
-    const wh = options.wh;
-
-    const currVideoHeight = vdata.currVideoHeight;
-    const currVideoWidth = vdata.currVideoWidth;
-    const currVideoTop = vdata.currVideoTop;
-
-
-    const playBtnTop = (wh - 50) / 2 + 'px';
-    const playBtnLeft = (ww - 50) / 2 + 'px';
-
-    const goods = vdata.goodsList;
-
+    const index = parseInt(options.index || 0);
     this.setData({
-      coverImage: vdata.coverImage,
-      list: app.globalData.currVideoList,
+      coverImage: options.coverImage || '',
       currIndex: index,
-      currCommentList: cml,
-      currGoodsList: goods,
-      playBtnTop: playBtnTop,
-      playBtnLeft: playBtnLeft,
-      currVideoHeight: currVideoHeight,
-      currVideoWidth: currVideoWidth,
-      currVideoTop: currVideoTop,
-      ww: ww,
-      wh: wh
     })
   },
 
@@ -144,7 +93,7 @@ Page({
   },
 
   //错误处理
-  binderror(e) {
+  bindError(e) {
     console.log('catch video error:');
     console.log(e);
     wx.showToast({
@@ -154,43 +103,35 @@ Page({
   },
 
   //播放时的处理
-  bindplay(e) {
-
+  bindPlay(e) {
     let hc = this.data.hiddenCover;
-
     this.data.playing = true;
-
     if (hc === false) {
-
       setTimeout(() => {
         this.setData({
           hiddenCover: true
         });
       }, 200)
-
-
     }
   },
 
   //触摸屏幕时记录一个时间
-  bindtouchstart(e) {
-    this.data.ts = e.timeStamp;
+  bindTouchStart(e) {
+    console.log('触摸屏幕时记录一个时间:', e)
+    this.touchTimeStart = e.timeStamp;
   },
 
   /**
    * 离开屏幕时判断，如果间隔小于100ms则认为是普通点击，触发暂停/播放操作；
    * 否则认为是拖拽或者滑动屏幕操作，不触发暂停/播放；
-   * @param e
    */
-  bindtouchend(e) {
+  bindTouchEnd(e) {
+    console.log('点击bindtouchend', e, this.touchTimeStart)
+    this.touchTimeEnd = e.timeStamp;
 
-    return
-    this.data.te = e.timeStamp;
-
-    let cost = this.data.te - this.data.ts;
+    let cost = this.touchTimeEnd - this.touchTimeStart;
     if (cost < 100) {
-
-      let ctx = plugin.getContext(this.data.playerid);
+      let ctx = wx.createVideoContext(`myVideo_${this.data.currIndex}`);
       if (this.data.playing) {
         ctx.pause();
         this.data.playing = false;
@@ -204,54 +145,33 @@ Page({
           showPlayBtn: false
         })
       }
-
-
     } else {
       //console.log('drag...')
     }
   },
 
-
-  swiperchange(e) {
-
-    // let currIndex = e.detail.current;
-    // this.setData({
-    //   currIndex: currIndex
-    // })
+  swiperChange(e) {
 
   },
 
   //滑动屏幕结束时加载下一个视频
-  swiperanimateend(e) {
-
+  swiperAnimateEnd(e) {
     const ci = e.detail.current;
     if (ci !== this.data.currIndex) {
-
-      const app = getApp();
-      // const vdata = app.globalData.currVideoList[ci];
-
-      // const currVideoHeight = vdata.currVideoHeight;
-      // const currVideoWidth = vdata.currVideoWidth;
-      // const currVideoTop = vdata.currVideoTop;
-
       this.data.sliderValue = 0;
-
       this.setData({
         currIndex: ci,
         hiddenCover: false,
-        showComment: false,
         showGoodsList: false,
         showPlayBtn: false,
         showOperation: true,
-       })
+      })
     }
-
-
   },
 
   //video时间更新触发
-  bindtimeupdate(e) {
-    console.log('bindtimeupdate',e)
+  bindTimeUpdate(e) {
+    // console.log('bindtimeupdate', e)
     if (this.data.canUpdateSlider) { //判断拖拽完成后才触发更新，避免拖拽失效
       let d = e.detail.duration;
       let sliderValue = e.detail.currentTime / d * 100;
@@ -264,14 +184,11 @@ Page({
         endTimeStr: et
       })
     }
-
   },
 
   //进度条滑块变化时触发视频seek定位
   sliderChange(e) {
-
     if (this.data.duration) {
-      // const ctx = plugin.getContext(this.data.playerid);
       let ctx = wx.createVideoContext(`myVideo_${this.data.currIndex}`);
       ctx.seek(e.detail.value / 100 * this.data.duration);
       this.setData({
@@ -279,8 +196,6 @@ Page({
         canUpdateSlider: true //完成拖动后允许更新滚动条
       })
     }
-
-
   },
 
   //滑块拖动过程处理
@@ -316,96 +231,15 @@ Page({
   },
 
   //点赞处理
-  toggleLike() {
-    const status = !!this.data.isLiked;
-
-    const res = !status;
+  toggleLike(e) {
+    let { index, item } = e.currentTarget.dataset
     this.setData({
-      isLiked: res
+      [`list[${index}].isLiked`]: !status
     });
   },
-
-  //切换显示评论区域
-  toggleComment() {
-
-    const status = !!this.data.showComment;
-    const res = !status;
-    this.setData({
-      showComment: res,
-      showOperation: !res
-    });
-
-  },
-
-  //关闭评论区域
-  closeComment() {
-
-    const res = false;
-    this.setData({
-      showComment: res,
-      showOperation: !res
-    });
-  },
-
-  //发一条评论
-  sendComment(e) {
-
-    const v = e.detail.value;
-
-    const cl = this.data.currCommentList;
-
-    const tmp = {};
-    tmp.userIcon = "../images/user-icon.svg";
-    tmp.content = v;
-    tmp.timeStr = "刚刚";
-    tmp.userName = "我";
-    cl.unshift(tmp);
-
-    this.setData({
-      currCommentList: cl,
-      userInput: '', // 发表评论后清理input
-      commentScrollTop: 0 //发表评论后回到顶部
-    })
-
-
-  },
-
-  //跳转到商品列表页
-  gotoShowGoodsList() {
-
-    this.data.showOperation = false;
-
-    this.setData({
-      showOperation: false,
-      showGoodsList: true
-    })
-
-  },
-
-  //关闭商品列表
-  closeGoodsList() {
-
-    this.setData({
-      showGoodsList: false,
-      showOperation: true
-    })
-
-  },
-
-  preventEvent() {
-    return;
-  },
-
-  //跳转到商品详情页
-  gotoGoodsDetail() {
-    wx.navigateTo({
-      url: '../goods/goods',
-    })
+  // 点赞
+  togglePraise(e) {
+    let { index, item } = e.currentTarget.dataset
+    console.log('点赞', index, item)
   }
-
-
-
-
-
-
 });
