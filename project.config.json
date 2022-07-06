@@ -45,7 +45,7 @@
   "compileType": "miniprogram",
   "libVersion": "2.7.0",
   "appid": "wxced3d955f3c7661a",
-  "projectname": "scrollvideo-master",
+  "projectname": "wx-video",
   "simulatorType": "wechat",
   "simulatorPluginLibVersion": {},
   "editorSetting": {

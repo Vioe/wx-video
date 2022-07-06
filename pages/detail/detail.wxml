@@ -1,6 +1,7 @@
 <import src="./operation_tmpl.wxml" />
 
 <view class='page dark wrap'>
+  <view class="buffer-wrap"><view class="buffer"></view></view>
   <swiper id="videoSwiper" class="swiper-container" vertical="{{true}}" easing-function='easeOutCubic' bindtouchstart='bindTouchStart' bindtouchend='bindTouchEnd' bindchange='swiperChange' bindanimationfinish='swiperAnimateEnd' duration="600" current="{{currIndex}}">
     <swiper-item wx:for="{{list}}" class="swiper-item-cont" wx:key="index" wx:for-item="item" wx:for-index="index">
       <block wx:if="{{currIndex == index}}">
